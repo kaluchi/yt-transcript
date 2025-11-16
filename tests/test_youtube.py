@@ -159,18 +159,26 @@ class TestGetTranscript:
         mock_transcript_list = Mock()
         mock_api.list_transcripts.return_value = mock_transcript_list
 
-        # Russian not found
+        # Russian manually created not found, generated not found
+        def side_effect_manual(langs):
+            raise NoTranscriptFound("", "", "")
+
+        def side_effect_generated(langs):
+            if "en" in langs:
+                mock_transcript = Mock()
+                mock_transcript.language_code = "en"
+                mock_transcript.fetch.return_value = [
+                    {"text": "Hello", "start": 0.0, "duration": 1.0},
+                ]
+                return mock_transcript
+            raise NoTranscriptFound("", "", "")
+
         mock_transcript_list.find_manually_created_transcript.side_effect = (
-            NoTranscriptFound("", "", "")
+            side_effect_manual
         )
-
-        mock_transcript = Mock()
-        mock_transcript.language_code = "en"
-        mock_transcript.fetch.return_value = [
-            {"text": "Hello", "start": 0.0, "duration": 1.0},
-        ]
-
-        mock_transcript_list.find_generated_transcript.return_value = mock_transcript
+        mock_transcript_list.find_generated_transcript.side_effect = (
+            side_effect_generated
+        )
 
         transcript = youtube_service.get_transcript("test_id", ["ru", "en"])
 
