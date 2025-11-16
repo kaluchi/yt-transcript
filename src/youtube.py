@@ -138,51 +138,24 @@ class YouTubeService:
             preferred_languages = ["en"]
 
         try:
-            # Try to get transcript in preferred languages
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            # Fetch transcript using new API
+            api = YouTubeTranscriptApi()
+            transcript_data = api.fetch(video_id, languages=preferred_languages)
 
-            # Try manual transcripts first in preferred languages
-            for lang in preferred_languages:
-                try:
-                    transcript = transcript_list.find_manually_created_transcript([lang])
-                    return self._format_transcript(video_id, transcript, lang)
-                except NoTranscriptFound:
-                    continue
+            # Extract text from transcript snippets
+            text = " ".join([entry.get("text", "") for entry in transcript_data])
 
-            # Try generated transcripts in preferred languages
-            for lang in preferred_languages:
-                try:
-                    transcript = transcript_list.find_generated_transcript([lang])
-                    return self._format_transcript(video_id, transcript, lang)
-                except NoTranscriptFound:
-                    continue
+            # Get language from transcript metadata
+            language = transcript_data.language_code if hasattr(transcript_data, 'language_code') else preferred_languages[0]
 
-            # Try any available transcript
-            try:
-                transcript = transcript_list.find_transcript(["en"])
-                return self._format_transcript(video_id, transcript, "en")
-            except NoTranscriptFound:
-                # Get first available transcript
-                available = list(transcript_list)
-                if available:
-                    transcript = available[0]
-                    return self._format_transcript(
-                        video_id, transcript, transcript.language_code
-                    )
-
-            raise Exception("No transcripts available for this video")
+            return Transcript(video_id=video_id, language=language, text=text)
 
         except TranscriptsDisabled:
             raise Exception("Transcripts are disabled for this video")
         except VideoUnavailable:
             raise Exception("Video is unavailable")
+        except NoTranscriptFound:
+            raise Exception(f"No transcript found in languages: {preferred_languages}")
         except Exception as e:
             logger.error(f"Error fetching transcript: {e}")
             raise
-
-    @staticmethod
-    def _format_transcript(video_id: str, transcript_obj, language: str) -> Transcript:
-        """Format transcript object to our model."""
-        transcript_data = transcript_obj.fetch()
-        text = " ".join([entry["text"] for entry in transcript_data])
-        return Transcript(video_id=video_id, language=language, text=text)

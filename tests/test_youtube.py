@@ -131,55 +131,47 @@ class TestGetTranscript:
     @patch("src.youtube.YouTubeTranscriptApi")
     def test_get_transcript_preferred_language(self, mock_api, youtube_service):
         """Test getting transcript in preferred language."""
-        mock_transcript_list = Mock()
-        mock_api.list_transcripts.return_value = mock_transcript_list
+        # Create mock instance
+        mock_instance = Mock()
+        mock_api.return_value = mock_instance
 
-        mock_transcript = Mock()
-        mock_transcript.language_code = "ru"
-        mock_transcript.fetch.return_value = [
+        # Mock transcript data - create a Mock that behaves like a list with language_code attribute
+        mock_transcript_data = Mock()
+        transcript_entries = [
             {"text": "Hello", "start": 0.0, "duration": 1.0},
             {"text": "World", "start": 1.0, "duration": 1.0},
         ]
+        mock_transcript_data.__iter__ = Mock(return_value=iter(transcript_entries))
+        mock_transcript_data.language_code = "ru"
 
-        mock_transcript_list.find_manually_created_transcript.return_value = (
-            mock_transcript
-        )
+        mock_instance.fetch.return_value = mock_transcript_data
 
         transcript = youtube_service.get_transcript("test_id", ["ru", "en"])
 
         assert transcript.video_id == "test_id"
         assert transcript.language == "ru"
         assert transcript.text == "Hello World"
+        mock_instance.fetch.assert_called_once_with("test_id", languages=["ru", "en"])
 
     @patch("src.youtube.YouTubeTranscriptApi")
     def test_get_transcript_fallback_english(self, mock_api, youtube_service):
         """Test falling back to English transcript."""
-        from youtube_transcript_api._errors import NoTranscriptFound
+        # Create mock instance
+        mock_instance = Mock()
+        mock_api.return_value = mock_instance
 
-        mock_transcript_list = Mock()
-        mock_api.list_transcripts.return_value = mock_transcript_list
+        # Mock English transcript data
+        mock_transcript_data = Mock()
+        transcript_entries = [
+            {"text": "Hello", "start": 0.0, "duration": 1.0},
+        ]
+        mock_transcript_data.__iter__ = Mock(return_value=iter(transcript_entries))
+        mock_transcript_data.language_code = "en"
 
-        # Russian manually created not found, generated not found
-        def side_effect_manual(langs):
-            raise NoTranscriptFound("", "", "")
-
-        def side_effect_generated(langs):
-            if "en" in langs:
-                mock_transcript = Mock()
-                mock_transcript.language_code = "en"
-                mock_transcript.fetch.return_value = [
-                    {"text": "Hello", "start": 0.0, "duration": 1.0},
-                ]
-                return mock_transcript
-            raise NoTranscriptFound("", "", "")
-
-        mock_transcript_list.find_manually_created_transcript.side_effect = (
-            side_effect_manual
-        )
-        mock_transcript_list.find_generated_transcript.side_effect = (
-            side_effect_generated
-        )
+        mock_instance.fetch.return_value = mock_transcript_data
 
         transcript = youtube_service.get_transcript("test_id", ["ru", "en"])
 
         assert transcript.language == "en"
+        assert transcript.text == "Hello"
+        mock_instance.fetch.assert_called_once_with("test_id", languages=["ru", "en"])
