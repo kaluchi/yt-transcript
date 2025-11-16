@@ -79,7 +79,12 @@ make docker-down
 ```bash
 # Создание виртуального окружения
 python -m venv venv
-source venv/bin/activate  # Linux/Mac, или venv\Scripts\activate для Windows
+
+# Активация (Linux/Mac)
+source venv/bin/activate
+
+# Активация (Windows PowerShell)
+venv\Scripts\activate
 
 # Установка зависимостей
 make install
