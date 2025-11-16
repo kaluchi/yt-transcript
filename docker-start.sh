@@ -34,7 +34,7 @@ if ! check_env "YT_TRANSCRIPT_YOUTUBE_API_KEY"; then
     all_set=false
 fi
 
-if ! check_env "YT_TRANSCRIPT_ANTHROPIC_API_KEY"; then
+if ! check_env "YT_TRANSCRIPT_OPENAI_API_KEY"; then
     all_set=false
 fi
 
@@ -47,7 +47,7 @@ if [ "$all_set" = false ]; then
     echo ""
     echo "  export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_telegram_bot_token"
     echo "  export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_youtube_api_key"
-    echo "  export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_anthropic_api_key"
+    echo "  export YT_TRANSCRIPT_OPENAI_API_KEY=your_openai_api_key"
     echo ""
     echo "Or source the .env.docker file after filling it:"
     echo "  cp .env.docker.example .env.docker"

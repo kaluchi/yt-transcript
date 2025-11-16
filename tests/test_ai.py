@@ -41,43 +41,52 @@ def sample_transcript():
 class TestGenerateSummary:
     """Tests for summary generation."""
 
-    @patch("src.ai.Anthropic")
+    @patch("src.ai.OpenAI")
     def test_generate_summary_success(
-        self, mock_anthropic, ai_service, sample_metadata, sample_transcript
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
     ):
         """Test successful summary generation."""
         mock_client = Mock()
-        mock_anthropic.return_value = mock_client
+        mock_openai.return_value = mock_client
 
         mock_response = Mock()
-        mock_response.content = [Mock(text="This is a generated summary.")]
-        mock_client.messages.create.return_value = mock_response
+        mock_choice = Mock()
+        mock_message = Mock()
+        mock_message.content = "This is a generated summary."
+        mock_choice.message = mock_message
+        mock_response.choices = [mock_choice]
+        mock_client.chat.completions.create.return_value = mock_response
 
         ai_service.client = mock_client
 
         summary = ai_service.generate_summary(sample_metadata, sample_transcript)
 
         assert summary == "This is a generated summary."
-        mock_client.messages.create.assert_called_once()
+        mock_client.chat.completions.create.assert_called_once()
 
-    @patch("src.ai.Anthropic")
+    @patch("src.ai.OpenAI")
     def test_generate_summary_includes_metadata(
-        self, mock_anthropic, ai_service, sample_metadata, sample_transcript
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
     ):
         """Test that summary generation includes metadata in prompt."""
         mock_client = Mock()
-        mock_anthropic.return_value = mock_client
+        mock_openai.return_value = mock_client
 
         mock_response = Mock()
-        mock_response.content = [Mock(text="Summary")]
-        mock_client.messages.create.return_value = mock_response
+        mock_choice = Mock()
+        mock_message = Mock()
+        mock_message.content = "Summary"
+        mock_choice.message = mock_message
+        mock_response.choices = [mock_choice]
+        mock_client.chat.completions.create.return_value = mock_response
 
         ai_service.client = mock_client
 
         ai_service.generate_summary(sample_metadata, sample_transcript)
 
-        call_args = mock_client.messages.create.call_args
-        prompt = call_args.kwargs["messages"][0]["content"]
+        call_args = mock_client.chat.completions.create.call_args
+        messages = call_args.kwargs["messages"]
+        prompt = messages[0]["content"]
 
         assert "Test Video" in prompt
         assert "Test Channel" in prompt
@@ -87,17 +96,21 @@ class TestGenerateSummary:
 class TestChatAboutVideo:
     """Tests for chat functionality."""
 
-    @patch("src.ai.Anthropic")
+    @patch("src.ai.OpenAI")
     def test_chat_about_video_success(
-        self, mock_anthropic, ai_service, sample_metadata, sample_transcript
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
     ):
         """Test successful chat response."""
         mock_client = Mock()
-        mock_anthropic.return_value = mock_client
+        mock_openai.return_value = mock_client
 
         mock_response = Mock()
-        mock_response.content = [Mock(text="Here's my answer about the video.")]
-        mock_client.messages.create.return_value = mock_response
+        mock_choice = Mock()
+        mock_message = Mock()
+        mock_message.content = "Here's my answer about the video."
+        mock_choice.message = mock_message
+        mock_response.choices = [mock_choice]
+        mock_client.chat.completions.create.return_value = mock_response
 
         ai_service.client = mock_client
 
@@ -107,17 +120,21 @@ class TestChatAboutVideo:
 
         assert response == "Here's my answer about the video."
 
-    @patch("src.ai.Anthropic")
+    @patch("src.ai.OpenAI")
     def test_chat_includes_conversation_history(
-        self, mock_anthropic, ai_service, sample_metadata, sample_transcript
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
     ):
         """Test that chat includes conversation history."""
         mock_client = Mock()
-        mock_anthropic.return_value = mock_client
+        mock_openai.return_value = mock_client
 
         mock_response = Mock()
-        mock_response.content = [Mock(text="Response")]
-        mock_client.messages.create.return_value = mock_response
+        mock_choice = Mock()
+        mock_message = Mock()
+        mock_message.content = "Response"
+        mock_choice.message = mock_message
+        mock_response.choices = [mock_choice]
+        mock_client.chat.completions.create.return_value = mock_response
 
         ai_service.client = mock_client
 
@@ -142,24 +159,29 @@ class TestChatAboutVideo:
             "Follow-up question", sample_metadata, sample_transcript, history
         )
 
-        call_args = mock_client.messages.create.call_args
+        call_args = mock_client.chat.completions.create.call_args
         messages = call_args.kwargs["messages"]
 
-        assert len(messages) >= 3  # History + new message
-        assert messages[0]["content"] == "Previous question"
-        assert messages[1]["content"] == "Previous answer"
+        # Should have system message + history + new message
+        assert len(messages) >= 4  # system + 2 history + 1 new
+        assert messages[1]["content"] == "Previous question"
+        assert messages[2]["content"] == "Previous answer"
 
-    @patch("src.ai.Anthropic")
+    @patch("src.ai.OpenAI")
     def test_chat_limits_history(
-        self, mock_anthropic, ai_service, sample_metadata, sample_transcript
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
     ):
         """Test that chat limits conversation history."""
         mock_client = Mock()
-        mock_anthropic.return_value = mock_client
+        mock_openai.return_value = mock_client
 
         mock_response = Mock()
-        mock_response.content = [Mock(text="Response")]
-        mock_client.messages.create.return_value = mock_response
+        mock_choice = Mock()
+        mock_message = Mock()
+        mock_message.content = "Response"
+        mock_choice.message = mock_message
+        mock_response.choices = [mock_choice]
+        mock_client.chat.completions.create.return_value = mock_response
 
         ai_service.client = mock_client
 
@@ -179,8 +201,8 @@ class TestChatAboutVideo:
             "New question", sample_metadata, sample_transcript, history
         )
 
-        call_args = mock_client.messages.create.call_args
+        call_args = mock_client.chat.completions.create.call_args
         messages = call_args.kwargs["messages"]
 
-        # Should have last 10 from history + 1 new message
-        assert len(messages) <= 11
+        # Should have system + last 10 from history + 1 new message
+        assert len(messages) <= 12

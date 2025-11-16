@@ -15,7 +15,7 @@ def config():
     return Config(
         telegram_bot_token="test_token",
         youtube_api_key="test_youtube_key",
-        anthropic_api_key="test_anthropic_key",
+        openai_api_key="test_openai_key",
         database_url="sqlite:///:memory:",
     )
 

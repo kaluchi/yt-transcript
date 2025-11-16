@@ -34,9 +34,9 @@ def main():
         else:
             print("✗ Not set")
 
-        # Check Anthropic API key
-        print("Anthropic API Key:", end=" ")
-        if config.anthropic_api_key and len(config.anthropic_api_key) > 10:
+        # Check OpenAI API key
+        print("OpenAI API Key:", end=" ")
+        if config.openai_api_key and len(config.openai_api_key) > 10:
             print("✓ Set")
         else:
             print("✗ Not set")

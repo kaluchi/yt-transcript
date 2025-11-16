@@ -17,7 +17,7 @@ Telegram bot для получения транскриптов видео с Yo
 - Docker и Docker Compose (для контейнеризации)
 - Telegram Bot Token
 - YouTube Data API v3 Key
-- Anthropic API Key (Claude)
+- OpenAI API Key (GPT)
 
 ## Быстрый старт
 
@@ -37,7 +37,7 @@ cd yt-transcript
 ```bash
 export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_youtube_api_key_here
-export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_anthropic_api_key_here
+export YT_TRANSCRIPT_OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 Или используйте файл `.env.docker`:
@@ -123,7 +123,7 @@ python -m src.bot
 src/
 ├── bot.py          # Telegram bot handlers
 ├── youtube.py      # YouTube API & transcript service
-├── ai.py           # AI service (Claude)
+├── ai.py           # AI service (GPT)
 ├── database.py     # Database operations (SQLAlchemy)
 ├── models.py       # Data models
 └── config.py       # Configuration management
@@ -162,7 +162,7 @@ pytest tests/test_youtube.py -v
 
 - **bot.py**: Основная логика бота, обработчики команд и сообщений
 - **youtube.py**: Работа с YouTube API и получение транскриптов
-- **ai.py**: Интеграция с Anthropic Claude для саммари и диалогов
+- **ai.py**: Интеграция с OpenAI GPT для саммари и диалогов
 - **database.py**: SQLAlchemy модели и операции с базой данных
 - **models.py**: Dataclass модели для типизации данных
 - **config.py**: Управление конфигурацией из переменных окружения
@@ -172,7 +172,7 @@ pytest tests/test_youtube.py -v
 - `python-telegram-bot` - Telegram Bot API
 - `youtube-transcript-api` - Получение транскриптов
 - `google-api-python-client` - YouTube Data API
-- `anthropic` - Claude API
+- `openai` - GPT API
 - `sqlalchemy` - ORM для базы данных
 - `pytest` - Тестирование
 
@@ -205,7 +205,7 @@ docker-compose logs -f bot
 
 - Транскрипты доступны только для видео, где они включены
 - YouTube API имеет квоты (10,000 единиц в день по умолчанию)
-- Claude API имеет лимиты по токенам
+- GPT API имеет лимиты по токенам
 - Длинные транскрипты обрезаются для соответствия лимитам API
 
 ## Безопасность
@@ -229,7 +229,7 @@ docker-compose logs -f bot
 - Убедитесь, что YouTube Data API v3 включен
 - Проверьте правильность API ключа
 
-### Ошибки Anthropic API
+### Ошибки OpenAI API
 
 - Проверьте баланс аккаунта
 - Убедитесь в правильности API ключа
@@ -245,4 +245,4 @@ Pull requests приветствуются! Для значительных из
 
 ## Автор
 
-Created with Claude Code
+Created with GPT Code

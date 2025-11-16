@@ -22,8 +22,8 @@
    - "Create Credentials" > "API Key"
    - Сохраните ключ
 
-#### 3. Anthropic API Key
-1. Зарегистрируйтесь на [Anthropic Console](https://console.anthropic.com/)
+#### 3. OpenAI API Key
+1. Зарегистрируйтесь на [OpenAI Console](https://console.openai.com/)
 2. Перейдите в "API Keys"
 3. Создайте новый API ключ
 4. Сохраните ключ (формат: `sk-ant-...`)
@@ -47,7 +47,7 @@ Docker-compose читает переменные с хоста с префикс
 ```bash
 export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_youtube_api_key
-export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_anthropic_api_key
+export YT_TRANSCRIPT_OPENAI_API_KEY=your_openai_api_key
 
 # Опционально:
 export YT_TRANSCRIPT_DATABASE_URL=sqlite:///./data/bot.db
@@ -70,7 +70,7 @@ source .env.docker
 ```bash
 echo 'export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_token' >> ~/.bashrc
 echo 'export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_key' >> ~/.bashrc
-echo 'export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_key' >> ~/.bashrc
+echo 'export YT_TRANSCRIPT_OPENAI_API_KEY=your_key' >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -279,7 +279,7 @@ pip freeze > requirements.txt
    ```bash
    ping api.telegram.org
    ping www.googleapis.com
-   ping api.anthropic.com
+   ping api.openai.com
    ```
 
 ### Превышены квоты YouTube API
@@ -291,14 +291,14 @@ YouTube API имеет лимит 10,000 единиц в день. Одна оп
 2. Используйте кэширование (уже реализовано в боте)
 3. Мониторьте использование в Google Cloud Console
 
-### Ошибки Anthropic API
+### Ошибки OpenAI API
 
 **Превышен rate limit:**
 - Добавьте задержки между запросами
 - Используйте exponential backoff
 
 **Недостаточно средств:**
-- Пополните баланс в Anthropic Console
+- Пополните баланс в OpenAI Console
 
 ### База данных заблокирована
 

@@ -141,7 +141,7 @@ async def test_async_function():
 ```env
 TELEGRAM_BOT_TOKEN=test_token
 YOUTUBE_API_KEY=real_youtube_key
-ANTHROPIC_API_KEY=real_anthropic_key
+OPENAI_API_KEY=real_openai_key
 DATABASE_URL=sqlite:///./test.db
 ```
 

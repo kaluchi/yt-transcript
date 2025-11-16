@@ -11,7 +11,7 @@ Docker-compose **НЕ** использует файл `.env` внутри кон
 # Установите переменные на хосте
 export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 export YT_TRANSCRIPT_YOUTUBE_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-export YT_TRANSCRIPT_ANTHROPIC_API_KEY=sk-ant-api03-XXXXXXXXXXXXXXXXXXXXXXXX
+export YT_TRANSCRIPT_OPENAI_API_KEY=sk-proj-03-XXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
 ### 2. Запустите бота
@@ -39,7 +39,7 @@ docker-compose logs -f bot
 ```bash
 export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_token
 export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_key
-export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_key
+export YT_TRANSCRIPT_OPENAI_API_KEY=your_key
 docker-compose up -d
 ```
 
@@ -67,7 +67,7 @@ docker-compose up -d
 ```bash
 export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_youtube_api_key_here
-export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_anthropic_api_key_here
+export YT_TRANSCRIPT_OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 **Преимущество:** Ключи в одном месте, можно версионировать (но добавьте в .gitignore!)
@@ -82,7 +82,7 @@ export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_anthropic_api_key_here
 # YouTube Transcript Bot
 export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_token
 export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_key
-export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_key
+export YT_TRANSCRIPT_OPENAI_API_KEY=your_key
 ```
 
 Затем:
@@ -109,7 +109,7 @@ sudo nano /etc/youtube-transcript-bot.env
 ```
 YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_token
 YT_TRANSCRIPT_YOUTUBE_API_KEY=your_key
-YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_key
+YT_TRANSCRIPT_OPENAI_API_KEY=your_key
 ```
 
 Systemd service:
@@ -154,7 +154,7 @@ WantedBy=multi-user.target
 # Проверьте, что переменные установлены
 echo $YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN
 echo $YT_TRANSCRIPT_YOUTUBE_API_KEY
-echo $YT_TRANSCRIPT_ANTHROPIC_API_KEY
+echo $YT_TRANSCRIPT_OPENAI_API_KEY
 
 # Проверьте, что docker-compose видит их
 docker-compose config

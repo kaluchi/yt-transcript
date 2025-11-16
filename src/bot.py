@@ -29,7 +29,7 @@ class YouTubeTranscriptBot:
         self.config = config
         self.db = Database(config.database_url)
         self.youtube = YouTubeService(config.youtube_api_key)
-        self.ai = AIService(config.anthropic_api_key, config.max_summary_words)
+        self.ai = AIService(config.openai_api_key, config.max_summary_words)
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handle /start command."""

@@ -3,7 +3,7 @@
 import logging
 from typing import List
 
-from anthropic import Anthropic
+from openai import OpenAI
 
 from src.models import VideoMetadata, Transcript, ConversationMessage
 
@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class AIService:
-    """Service for AI-powered operations using Claude."""
+    """Service for AI-powered operations using OpenAI."""
 
     def __init__(self, api_key: str, max_summary_words: int = 500):
         """Initialize AI service."""
-        self.client = Anthropic(api_key=api_key)
+        self.client = OpenAI(api_key=api_key)
         self.max_summary_words = max_summary_words
-        self.model = "claude-3-5-sonnet-20241022"
+        self.model = "gpt-4o-mini"  # Fast and cost-effective
 
     def generate_summary(
         self, metadata: VideoMetadata, transcript: Transcript
@@ -52,13 +52,14 @@ Please provide a comprehensive summary in no more than {self.max_summary_words} 
 Write in a clear, informative style."""
 
         try:
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
-                max_tokens=1024,
                 messages=[{"role": "user", "content": prompt}],
+                max_tokens=1024,
+                temperature=0.7,
             )
 
-            summary = response.content[0].text
+            summary = response.choices[0].message.content
             logger.info(f"Generated summary for video {metadata.video_id}")
             return summary
 
@@ -85,8 +86,8 @@ Write in a clear, informative style."""
         Returns:
             AI response
         """
-        # Build system context
-        system_context = f"""You are a helpful assistant discussing a YouTube video with a user.
+        # Build system message
+        system_message = f"""You are a helpful assistant discussing a YouTube video with a user.
 
 Video Information:
 - Title: {metadata.title}
@@ -100,7 +101,7 @@ Use the transcript to answer questions accurately. Be conversational and helpful
 Refer to specific parts of the video when relevant."""
 
         # Build conversation messages
-        messages = []
+        messages = [{"role": "system", "content": system_message}]
 
         # Add conversation history
         for msg in conversation_history[-10:]:  # Keep last 10 messages
@@ -110,14 +111,14 @@ Refer to specific parts of the video when relevant."""
         messages.append({"role": "user", "content": user_message})
 
         try:
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
-                max_tokens=2048,
-                system=system_context,
                 messages=messages,
+                max_tokens=2048,
+                temperature=0.7,
             )
 
-            reply = response.content[0].text
+            reply = response.choices[0].message.content
             logger.info(f"Generated chat response for video {metadata.video_id}")
             return reply
 
