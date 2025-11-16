@@ -283,6 +283,10 @@ def main():
         level=logging.INFO,
     )
 
+    # Enable DEBUG logging for Telegram to see JSON payloads
+    logging.getLogger("telegram").setLevel(logging.DEBUG)
+    logging.getLogger("telegram.ext").setLevel(logging.DEBUG)
+
     # Load configuration
     config = Config.from_env()
     config.validate()
