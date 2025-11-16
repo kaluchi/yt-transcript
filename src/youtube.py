@@ -3,7 +3,7 @@
 import logging
 import re
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -70,12 +70,12 @@ class YouTubeService:
             )
             response = request.execute()
 
-            if not response.get("items"):
+            if not response["items"]:
                 raise ValueError(f"Video not found: {video_id}")
 
             video = response["items"][0]
             snippet = video["snippet"]
-            statistics = video.get("statistics", {})
+            statistics = video["statistics"]
 
             # Parse duration (ISO 8601 format)
             duration_str = video["contentDetails"]["duration"]
@@ -89,12 +89,12 @@ class YouTubeService:
             return VideoMetadata(
                 video_id=video_id,
                 title=snippet["title"],
-                description=snippet.get("description", ""),
+                description=snippet["description"],
                 channel_name=snippet["channelTitle"],
                 duration=duration,
                 published_at=published_at,
-                view_count=int(statistics.get("viewCount", 0)),
-                like_count=int(statistics.get("likeCount", 0)),
+                view_count=int(statistics["viewCount"]),
+                like_count=int(statistics["likeCount"]),
             )
 
         except Exception as e:
@@ -108,14 +108,14 @@ class YouTubeService:
         if not match:
             return 0
 
-        hours = int(match.group(1) or 0)
-        minutes = int(match.group(2) or 0)
-        seconds = int(match.group(3) or 0)
+        hours = int(match.group(1) or "0")
+        minutes = int(match.group(2) or "0")
+        seconds = int(match.group(3) or "0")
 
         return hours * 3600 + minutes * 60 + seconds
 
     def get_transcript(
-        self, video_id: str, preferred_languages: Optional[List[str]] = None
+        self, video_id: str, preferred_languages: List[str]
     ) -> Transcript:
         """
         Fetch video transcript.
@@ -130,9 +130,6 @@ class YouTubeService:
         Raises:
             Exception: If transcript not available
         """
-        if not preferred_languages:
-            preferred_languages = ["en"]
-
         try:
             # Fetch transcript using new API
             api = YouTubeTranscriptApi()

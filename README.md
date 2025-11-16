@@ -50,9 +50,13 @@ source .env.docker
 
 **Для локального запуска:**
 
+Создайте файл `.env` с переменными:
+
 ```bash
-cp .env.example .env
-# Отредактируйте .env с вашими ключами
+# .env
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+YOUTUBE_API_KEY=your_youtube_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 ### 3. Запуск с Docker
