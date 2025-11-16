@@ -53,32 +53,24 @@ export OPENAI_API_KEY=your_openai_api_key_here
 ### 3. Запуск с Docker
 
 ```bash
-docker compose up -d
-# или
 make docker-up
 ```
 
 Пересборка при изменениях:
 
 ```bash
-docker compose up --build -d
-# или
 make docker-build && make docker-up
 ```
 
 Просмотр логов:
 
 ```bash
-docker compose logs -f bot
-# или
 make docker-logs
 ```
 
 Остановка:
 
 ```bash
-docker compose down
-# или
 make docker-down
 ```
 
@@ -87,19 +79,13 @@ make docker-down
 ```bash
 # Создание виртуального окружения
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# или
-venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac, или venv\Scripts\activate для Windows
 
 # Установка зависимостей
 make install
-# или
-pip install -r requirements.txt
 
 # Запуск бота
 make run
-# или
-python -m src.bot
 ```
 
 ## Доступные команды (Makefile)
@@ -172,14 +158,9 @@ tests/
 ## Тестирование
 
 ```bash
-make test                           # Все тесты
+make test                           # Все тесты (56 тестов)
 make coverage                       # С покрытием кода (96%)
 make lint                           # Проверка синтаксиса
-
-# Или напрямую:
-python -m pytest -v                 # Все тесты
-python -m pytest --cov=src          # С покрытием
-python -m pytest tests/test_youtube.py -v  # Конкретный файл
 ```
 
 ## База данных
