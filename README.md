@@ -30,25 +30,38 @@ cd yt-transcript
 
 ### 2. Настройка переменных окружения
 
-Скопируйте `.env.example` в `.env` и заполните необходимые ключи:
+**Для Docker (рекомендуется):**
+
+Экспортируйте переменные окружения с префиксом `YT_TRANSCRIPT_*`:
+
+```bash
+export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_youtube_api_key_here
+export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_anthropic_api_key_here
+```
+
+Или используйте файл `.env.docker`:
+
+```bash
+cp .env.docker.example .env.docker
+# Отредактируйте .env.docker с вашими ключами
+source .env.docker
+```
+
+**Для локального запуска:**
 
 ```bash
 cp .env.example .env
-```
-
-Отредактируйте `.env`:
-
-```env
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-YOUTUBE_API_KEY=your_youtube_api_key_here
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-DATABASE_URL=sqlite:///./data/bot.db
-LOG_LEVEL=INFO
+# Отредактируйте .env с вашими ключами
 ```
 
 ### 3. Запуск с Docker
 
 ```bash
+# С автоматической проверкой переменных окружения
+./docker-start.sh
+
+# Или напрямую
 docker-compose up -d
 ```
 

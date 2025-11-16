@@ -5,13 +5,16 @@ services:
     build: .
     container_name: youtube-transcript-bot
     restart: unless-stopped
-    env_file:
-      - .env
     volumes:
       # Persist database
       - ./data:/app/data
     environment:
-      - DATABASE_URL=sqlite:///./data/bot.db
+      # Read from host environment with YT_TRANSCRIPT_* prefix
+      - TELEGRAM_BOT_TOKEN=${YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN}
+      - YOUTUBE_API_KEY=${YT_TRANSCRIPT_YOUTUBE_API_KEY}
+      - ANTHROPIC_API_KEY=${YT_TRANSCRIPT_ANTHROPIC_API_KEY}
+      - DATABASE_URL=${YT_TRANSCRIPT_DATABASE_URL:-sqlite:///./data/bot.db}
+      - LOG_LEVEL=${YT_TRANSCRIPT_LOG_LEVEL:-INFO}
     logging:
       driver: "json-file"
       options:

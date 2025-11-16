@@ -37,24 +37,49 @@
 # Клонировать репозиторий
 git clone <your-repo-url>
 cd yt-transcript
-
-# Создать .env файл
-cp .env.example .env
 ```
 
-#### Шаг 2: Настройка .env
-Отредактируйте `.env` файл:
-```env
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-YOUTUBE_API_KEY=your_youtube_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
-DATABASE_URL=sqlite:///./data/bot.db
-LOG_LEVEL=INFO
+#### Шаг 2: Настройка переменных окружения
+
+Docker-compose читает переменные с хоста с префиксом `YT_TRANSCRIPT_*`:
+
+**Способ А: Экспорт напрямую**
+```bash
+export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_youtube_api_key
+export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# Опционально:
+export YT_TRANSCRIPT_DATABASE_URL=sqlite:///./data/bot.db
+export YT_TRANSCRIPT_LOG_LEVEL=INFO
+```
+
+**Способ Б: Использование .env.docker файла**
+```bash
+# Создать файл из примера
+cp .env.docker.example .env.docker
+
+# Отредактировать .env.docker с вашими ключами
+nano .env.docker
+
+# Загрузить переменные
+source .env.docker
+```
+
+**Способ В: Добавить в ~/.bashrc или ~/.zshrc (постоянно)**
+```bash
+echo 'export YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN=your_token' >> ~/.bashrc
+echo 'export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_key' >> ~/.bashrc
+echo 'export YT_TRANSCRIPT_ANTHROPIC_API_KEY=your_key' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 #### Шаг 3: Запуск
 ```bash
-# Сборка и запуск
+# Автоматический запуск с проверкой переменных
+./docker-start.sh
+
+# Или напрямую
 docker-compose up -d
 
 # Просмотр логов
