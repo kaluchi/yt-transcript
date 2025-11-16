@@ -142,8 +142,8 @@ class YouTubeService:
             api = YouTubeTranscriptApi()
             transcript_data = api.fetch(video_id, languages=preferred_languages)
 
-            # Extract text from transcript snippets
-            text = " ".join([entry.get("text", "") for entry in transcript_data])
+            # Extract text from transcript snippets (FetchedTranscriptSnippet objects)
+            text = " ".join([entry.text for entry in transcript_data])
 
             # Get language from transcript metadata
             language = transcript_data.language_code if hasattr(transcript_data, 'language_code') else preferred_languages[0]

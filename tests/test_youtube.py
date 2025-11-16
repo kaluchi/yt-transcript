@@ -135,12 +135,16 @@ class TestGetTranscript:
         mock_instance = Mock()
         mock_api.return_value = mock_instance
 
-        # Mock transcript data - create a Mock that behaves like a list with language_code attribute
+        # Mock transcript data - create Mock objects with .text attribute (like FetchedTranscriptSnippet)
         mock_transcript_data = Mock()
-        transcript_entries = [
-            {"text": "Hello", "start": 0.0, "duration": 1.0},
-            {"text": "World", "start": 1.0, "duration": 1.0},
-        ]
+
+        # Create mock snippet objects with text attribute
+        snippet1 = Mock()
+        snippet1.text = "Hello"
+        snippet2 = Mock()
+        snippet2.text = "World"
+
+        transcript_entries = [snippet1, snippet2]
         mock_transcript_data.__iter__ = Mock(return_value=iter(transcript_entries))
         mock_transcript_data.language_code = "ru"
 
@@ -160,11 +164,13 @@ class TestGetTranscript:
         mock_instance = Mock()
         mock_api.return_value = mock_instance
 
-        # Mock English transcript data
+        # Mock English transcript data with snippet object
         mock_transcript_data = Mock()
-        transcript_entries = [
-            {"text": "Hello", "start": 0.0, "duration": 1.0},
-        ]
+
+        snippet = Mock()
+        snippet.text = "Hello"
+
+        transcript_entries = [snippet]
         mock_transcript_data.__iter__ = Mock(return_value=iter(transcript_entries))
         mock_transcript_data.language_code = "en"
 
