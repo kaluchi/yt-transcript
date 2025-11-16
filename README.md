@@ -53,25 +53,33 @@ export OPENAI_API_KEY=your_openai_api_key_here
 ### 3. Запуск с Docker
 
 ```bash
-docker-compose up -d
+docker compose up -d
+# или
+make docker-up
 ```
 
 Пересборка при изменениях:
 
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
+# или
+make docker-build && make docker-up
 ```
 
 Просмотр логов:
 
 ```bash
-docker-compose logs -f bot
+docker compose logs -f bot
+# или
+make docker-logs
 ```
 
 Остановка:
 
 ```bash
-docker-compose down
+docker compose down
+# или
+make docker-down
 ```
 
 ### 4. Запуск локально (для разработки)
@@ -84,10 +92,32 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate  # Windows
 
 # Установка зависимостей
+make install
+# или
 pip install -r requirements.txt
 
 # Запуск бота
+make run
+# или
 python -m src.bot
+```
+
+## Доступные команды (Makefile)
+
+Для удобства все основные операции доступны через `make`:
+
+```bash
+make help          # Показать все доступные команды
+make install       # Установить зависимости (требует активный venv)
+make test          # Запустить тесты
+make coverage      # Запустить тесты с отчетом о покрытии
+make lint          # Проверить синтаксис кода
+make run           # Запустить бота локально
+make docker-build  # Собрать Docker образ
+make docker-up     # Запустить в Docker
+make docker-down   # Остановить Docker контейнер
+make docker-logs   # Показать логи Docker контейнера
+make clean         # Удалить временные файлы
 ```
 
 ## Использование
@@ -142,9 +172,14 @@ tests/
 ## Тестирование
 
 ```bash
-pytest                              # Все тесты
-pytest --cov=src                    # С покрытием
-pytest tests/test_youtube.py -v     # Конкретный файл
+make test                           # Все тесты
+make coverage                       # С покрытием кода (96%)
+make lint                           # Проверка синтаксиса
+
+# Или напрямую:
+python -m pytest -v                 # Все тесты
+python -m pytest --cov=src          # С покрытием
+python -m pytest tests/test_youtube.py -v  # Конкретный файл
 ```
 
 ## База данных
