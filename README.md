@@ -141,43 +141,11 @@ tests/
 
 ## Тестирование
 
-Запуск всех тестов:
-
 ```bash
-pytest
+pytest                              # Все тесты
+pytest --cov=src                    # С покрытием
+pytest tests/test_youtube.py -v     # Конкретный файл
 ```
-
-С покрытием кода:
-
-```bash
-pytest --cov=src --cov-report=html
-```
-
-Запуск конкретного теста:
-
-```bash
-pytest tests/test_youtube.py -v
-```
-
-## Разработка
-
-### Структура кода
-
-- **bot.py**: Основная логика бота, обработчики команд и сообщений
-- **youtube.py**: Работа с YouTube API и получение транскриптов
-- **ai.py**: Интеграция с OpenAI GPT для саммари и диалогов
-- **database.py**: SQLAlchemy модели и операции с базой данных
-- **models.py**: Dataclass модели для типизации данных
-- **config.py**: Управление конфигурацией из переменных окружения
-
-### Основные зависимости
-
-- `python-telegram-bot` - Telegram Bot API
-- `youtube-transcript-api` - Получение транскриптов
-- `google-api-python-client` - YouTube Data API
-- `openai` - GPT API
-- `sqlalchemy` - ORM для базы данных
-- `pytest` - Тестирование
 
 ## База данных
 
@@ -204,41 +172,3 @@ export LOG_LEVEL=DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 - YouTube API имеет квоты (10,000 единиц в день по умолчанию)
 - GPT API имеет лимиты по токенам
 - Длинные транскрипты обрезаются для соответствия лимитам API
-
-## Безопасность
-
-- Не коммитьте API ключи в git
-- Используйте отдельные API ключи для разработки и продакшена
-- Регулярно ротируйте API ключи
-- Ограничьте права доступа к базе данных
-
-## Troubleshooting
-
-### Бот не запускается
-
-1. Проверьте экспорт переменных окружения (YT_TRANSCRIPT_* для Docker)
-2. Убедитесь, что все зависимости установлены
-
-### Ошибки YouTube API
-
-- Проверьте квоты в Google Cloud Console
-- Убедитесь, что YouTube Data API v3 включен
-- Проверьте правильность API ключа
-
-### Ошибки OpenAI API
-
-- Проверьте баланс аккаунта
-- Убедитесь в правильности API ключа
-- Проверьте rate limits
-
-## Лицензия
-
-MIT
-
-## Вклад
-
-Pull requests приветствуются! Для значительных изменений сначала откройте issue для обсуждения.
-
-## Автор
-
-Created with GPT Code
