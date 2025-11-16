@@ -1,0 +1,126 @@
+"""AI service for generating summaries and handling conversations."""
+
+import logging
+from typing import List
+
+from anthropic import Anthropic
+
+from src.models import VideoMetadata, Transcript, ConversationMessage
+
+logger = logging.getLogger(__name__)
+
+
+class AIService:
+    """Service for AI-powered operations using Claude."""
+
+    def __init__(self, api_key: str, max_summary_words: int = 500):
+        """Initialize AI service."""
+        self.client = Anthropic(api_key=api_key)
+        self.max_summary_words = max_summary_words
+        self.model = "claude-3-5-sonnet-20241022"
+
+    def generate_summary(
+        self, metadata: VideoMetadata, transcript: Transcript
+    ) -> str:
+        """
+        Generate a summary of the video based on metadata and transcript.
+
+        Args:
+            metadata: Video metadata
+            transcript: Video transcript
+
+        Returns:
+            Summary text (max 500 words)
+        """
+        prompt = f"""Analyze this YouTube video and create a concise summary.
+
+Video Details:
+- Title: {metadata.title}
+- Channel: {metadata.channel_name}
+- Duration: {metadata.duration // 60} minutes {metadata.duration % 60} seconds
+- Views: {metadata.view_count:,}
+- Likes: {metadata.like_count:,}
+
+Transcript:
+{transcript.text[:15000]}  # Limit transcript to avoid token limits
+
+Please provide a comprehensive summary in no more than {self.max_summary_words} words that covers:
+1. The main topic and purpose of the video
+2. Key points and important information discussed
+3. Main conclusions or takeaways
+
+Write in a clear, informative style."""
+
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=1024,
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+            summary = response.content[0].text
+            logger.info(f"Generated summary for video {metadata.video_id}")
+            return summary
+
+        except Exception as e:
+            logger.error(f"Error generating summary: {e}")
+            raise
+
+    def chat_about_video(
+        self,
+        user_message: str,
+        metadata: VideoMetadata,
+        transcript: Transcript,
+        conversation_history: List[ConversationMessage],
+    ) -> str:
+        """
+        Handle a conversation about a video.
+
+        Args:
+            user_message: User's message
+            metadata: Video metadata
+            transcript: Video transcript
+            conversation_history: Previous conversation messages
+
+        Returns:
+            AI response
+        """
+        # Build system context
+        system_context = f"""You are a helpful assistant discussing a YouTube video with a user.
+
+Video Information:
+- Title: {metadata.title}
+- Channel: {metadata.channel_name}
+- Description: {metadata.description[:500]}
+
+Full Transcript:
+{transcript.text[:20000]}  # Limit to avoid token limits
+
+Use the transcript to answer questions accurately. Be conversational and helpful.
+Refer to specific parts of the video when relevant."""
+
+        # Build conversation messages
+        messages = []
+
+        # Add conversation history
+        for msg in conversation_history[-10:]:  # Keep last 10 messages
+            messages.append({"role": msg.role, "content": msg.content})
+
+        # Add current user message
+        messages.append({"role": "user", "content": user_message})
+
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=2048,
+                system=system_context,
+                messages=messages,
+            )
+
+            reply = response.content[0].text
+            logger.info(f"Generated chat response for video {metadata.video_id}")
+            return reply
+
+        except Exception as e:
+            logger.error(f"Error in chat: {e}")
+            raise
