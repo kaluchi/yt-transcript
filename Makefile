@@ -23,7 +23,13 @@ coverage:
 	python -m pytest --cov=src --cov-report=term-missing --cov-report=html
 
 run:
-	python -m src.bot
+	@python -c "import os, sys; \
+	os.environ['TELEGRAM_BOT_TOKEN'] = os.getenv('YT_TRANSCRIPT_TELEGRAM_BOT_TOKEN', ''); \
+	os.environ['YOUTUBE_API_KEY'] = os.getenv('YT_TRANSCRIPT_YOUTUBE_API_KEY', ''); \
+	os.environ['OPENAI_API_KEY'] = os.getenv('YT_TRANSCRIPT_OPENAI_API_KEY', ''); \
+	os.environ['DATABASE_URL'] = os.getenv('YT_TRANSCRIPT_DATABASE_URL', 'sqlite:///./data/bot.db'); \
+	os.environ['LOG_LEVEL'] = os.getenv('YT_TRANSCRIPT_LOG_LEVEL', 'INFO'); \
+	import runpy; runpy.run_module('src.bot', run_name='__main__')"
 
 docker-build:
 	docker compose build
