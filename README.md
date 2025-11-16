@@ -53,17 +53,25 @@ export OPENAI_API_KEY=your_openai_api_key_here
 ### 3. Запуск с Docker
 
 ```bash
-# С автоматической проверкой переменных окружения
-./docker-start.sh
-
-# Или напрямую
 docker-compose up -d
 ```
 
-Или пересборка при изменениях:
+Пересборка при изменениях:
 
 ```bash
 docker-compose up --build -d
+```
+
+Просмотр логов:
+
+```bash
+docker-compose logs -f bot
+```
+
+Остановка:
+
+```bash
+docker-compose down
 ```
 
 ### 4. Запуск локально (для разработки)
@@ -184,16 +192,10 @@ pytest tests/test_youtube.py -v
 
 ## Логирование
 
-Логи выводятся в stdout и могут быть настроены через переменную `LOG_LEVEL`:
-
-```env
-LOG_LEVEL=DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL
-```
-
-При запуске в Docker логи доступны через:
+Логи выводятся в stdout. Настройте уровень логирования через переменную `LOG_LEVEL`:
 
 ```bash
-docker-compose logs -f bot
+export LOG_LEVEL=DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
 
 ## Ограничения
@@ -214,9 +216,8 @@ docker-compose logs -f bot
 
 ### Бот не запускается
 
-1. Проверьте экспорт переменных окружения
+1. Проверьте экспорт переменных окружения (YT_TRANSCRIPT_* для Docker)
 2. Убедитесь, что все зависимости установлены
-3. Проверьте логи: `docker-compose logs bot`
 
 ### Ошибки YouTube API
 
