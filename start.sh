@@ -8,14 +8,14 @@ echo "YouTube Transcript Bot - Quick Start"
 echo "=========================================="
 echo ""
 
-# Check if .env exists
-if [ ! -f .env ]; then
-    echo "⚠️  .env file not found!"
+# Check if environment variables are set
+if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$YOUTUBE_API_KEY" ] || [ -z "$OPENAI_API_KEY" ]; then
+    echo "⚠️  Required environment variables not set!"
     echo ""
-    echo "Please create .env file with the following variables:"
-    echo "   - TELEGRAM_BOT_TOKEN=your_token"
-    echo "   - YOUTUBE_API_KEY=your_key"
-    echo "   - OPENAI_API_KEY=your_key"
+    echo "Please export the following variables:"
+    echo "   export TELEGRAM_BOT_TOKEN=your_token"
+    echo "   export YOUTUBE_API_KEY=your_key"
+    echo "   export OPENAI_API_KEY=your_key"
     echo ""
     echo "Then run this script again."
     exit 1

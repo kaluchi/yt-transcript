@@ -40,23 +40,14 @@ export YT_TRANSCRIPT_YOUTUBE_API_KEY=your_youtube_api_key_here
 export YT_TRANSCRIPT_OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-Или используйте файл `.env.docker`:
-
-```bash
-cp .env.docker.example .env.docker
-# Отредактируйте .env.docker с вашими ключами
-source .env.docker
-```
-
 **Для локального запуска:**
 
-Создайте файл `.env` с переменными:
+Экспортируйте переменные окружения:
 
 ```bash
-# .env
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-YOUTUBE_API_KEY=your_youtube_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
+export TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+export YOUTUBE_API_KEY=your_youtube_api_key_here
+export OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 ### 3. Запуск с Docker
@@ -214,7 +205,7 @@ docker-compose logs -f bot
 
 ## Безопасность
 
-- Храните `.env` файл в безопасности (не коммитьте его в git)
+- Не коммитьте API ключи в git
 - Используйте отдельные API ключи для разработки и продакшена
 - Регулярно ротируйте API ключи
 - Ограничьте права доступа к базе данных
@@ -223,7 +214,7 @@ docker-compose logs -f bot
 
 ### Бот не запускается
 
-1. Проверьте `.env` файл и наличие всех ключей
+1. Проверьте экспорт переменных окружения
 2. Убедитесь, что все зависимости установлены
 3. Проверьте логи: `docker-compose logs bot`
 

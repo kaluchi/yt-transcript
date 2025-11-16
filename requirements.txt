@@ -2,7 +2,6 @@ python-telegram-bot==22.5
 youtube-transcript-api==1.2.3
 google-api-python-client==2.187.0
 openai==2.8.0
-python-dotenv==1.2.1
 sqlalchemy==2.0.44
 aiohttp==3.13.2
 cffi==2.0.0
