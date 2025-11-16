@@ -48,7 +48,7 @@ Commands:
 /start - Show this message
 /help - Show help information"""
 
-        await update.message.reply_text(welcome_message)
+        await update.message.reply_text(welcome_message, parse_mode='Markdown')
 
     async def help_command(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -76,7 +76,7 @@ Examples:
    "Can you explain the part about X?"
    "What did they say about Y?"
 """
-        await update.message.reply_text(help_text)
+        await update.message.reply_text(help_text, parse_mode='Markdown')
 
     async def handle_message(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -98,12 +98,27 @@ Examples:
         self, update: Update, video_id: str, user_language: str
     ) -> None:
         """Process a YouTube video URL."""
+        user_id = update.effective_user.id
+
         # Check if we already have this video
         existing_summary = self.db.get_summary(video_id)
 
         if existing_summary:
+            # Save context - user is now interacting with this video
+            metadata = self.db.get_video_metadata(video_id)
+            context_msg = ConversationMessage(
+                user_id=user_id,
+                video_id=video_id,
+                role="user",
+                content=f"[Viewing video: {metadata.title if metadata else video_id}]",
+                created_at=datetime.utcnow(),
+            )
+            self.db.save_message(context_msg)
+
             await update.message.reply_text(
-                f"✅ I already have this video!\n\n{existing_summary.summary}"
+                f"✅ I already have this video!\n\n{existing_summary.summary}\n\n"
+                f"💬 Ask me anything about this video!",
+                parse_mode='Markdown'
             )
             return
 
@@ -124,7 +139,7 @@ Examples:
 
             # Step 3: Generate summary
             await status_msg.edit_text("🤖 Generating summary with AI...")
-            summary_text = self.ai.generate_summary(metadata, transcript)
+            summary_text = self.ai.generate_summary(metadata, transcript, user_language)
 
             # Save summary
             summary = VideoSummary(
@@ -132,13 +147,24 @@ Examples:
             )
             self.db.save_summary(summary)
 
+            # Save context - user is now interacting with this video
+            context_msg = ConversationMessage(
+                user_id=user_id,
+                video_id=video_id,
+                role="user",
+                content=f"[Processed new video: {metadata.title}]",
+                created_at=datetime.utcnow(),
+            )
+            self.db.save_message(context_msg)
+
             # Send summary
             await status_msg.edit_text(
                 f"✅ Video processed successfully!\n\n"
                 f"📺 **{metadata.title}**\n"
                 f"👤 {metadata.channel_name}\n\n"
                 f"📄 Summary:\n{summary_text}\n\n"
-                f"💬 Ask me anything about this video!"
+                f"💬 Ask me anything about this video!",
+                parse_mode='Markdown'
             )
 
         except Exception as e:
@@ -196,7 +222,7 @@ Examples:
         try:
             typing_msg = await update.message.reply_text("💭 Thinking...")
             response = self.ai.chat_about_video(
-                message_text, metadata, transcript, history
+                message_text, metadata, transcript, history, user_language
             )
 
             # Save assistant response
@@ -210,7 +236,7 @@ Examples:
             self.db.save_message(assistant_msg)
 
             # Send response
-            await typing_msg.edit_text(response)
+            await typing_msg.edit_text(response, parse_mode='Markdown')
 
         except Exception as e:
             logger.error(f"Error in conversation: {e}")
