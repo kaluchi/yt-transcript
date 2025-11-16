@@ -70,6 +70,11 @@ class TestParseDuration:
         duration = "PT2H"
         assert youtube_service._parse_duration(duration) == 7200
 
+    def test_parse_invalid_duration(self, youtube_service):
+        """Test parsing invalid duration format."""
+        duration = "INVALID"
+        assert youtube_service._parse_duration(duration) == 0
+
 
 class TestGetVideoMetadata:
     """Tests for video metadata fetching."""
@@ -181,3 +186,41 @@ class TestGetTranscript:
         assert transcript.language == "en"
         assert transcript.text == "Hello"
         mock_instance.fetch.assert_called_once_with("test_id", languages=["ru", "en"])
+
+    @patch("src.youtube.YouTubeTranscriptApi")
+    def test_get_transcript_transcripts_disabled(self, mock_api, youtube_service):
+        """Test error when transcripts are disabled."""
+        from youtube_transcript_api._errors import TranscriptsDisabled
+
+        mock_instance = Mock()
+        mock_api.return_value = mock_instance
+        mock_instance.fetch.side_effect = TranscriptsDisabled("test_id")
+
+        with pytest.raises(Exception, match="Transcripts are disabled"):
+            youtube_service.get_transcript("test_id", ["en"])
+
+    @patch("src.youtube.YouTubeTranscriptApi")
+    def test_get_transcript_video_unavailable(self, mock_api, youtube_service):
+        """Test error when video is unavailable."""
+        from youtube_transcript_api._errors import VideoUnavailable
+
+        mock_instance = Mock()
+        mock_api.return_value = mock_instance
+        mock_instance.fetch.side_effect = VideoUnavailable("test_id")
+
+        with pytest.raises(Exception, match="Video is unavailable"):
+            youtube_service.get_transcript("test_id", ["en"])
+
+    @patch("src.youtube.YouTubeTranscriptApi")
+    def test_get_transcript_not_found(self, mock_api, youtube_service):
+        """Test error when no transcript found in requested languages."""
+        from youtube_transcript_api._errors import NoTranscriptFound
+
+        mock_instance = Mock()
+        mock_api.return_value = mock_instance
+        mock_instance.fetch.side_effect = NoTranscriptFound(
+            "test_id", ["ru"], []
+        )
+
+        with pytest.raises(Exception, match="No transcript found in languages"):
+            youtube_service.get_transcript("test_id", ["ru"])

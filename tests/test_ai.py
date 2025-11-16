@@ -206,3 +206,95 @@ class TestChatAboutVideo:
 
         # Should have system + last 10 from history + 1 new message
         assert len(messages) <= 12
+
+    @patch("src.ai.OpenAI")
+    def test_generate_summary_russian_language(
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
+    ):
+        """Test summary generation in Russian language."""
+        mock_client = Mock()
+        mock_openai.return_value = mock_client
+
+        mock_response = Mock()
+        mock_choice = Mock()
+        mock_message = Mock()
+        mock_message.content = "Русское резюме видео."
+        mock_choice.message = mock_message
+        mock_response.choices = [mock_choice]
+        mock_client.chat.completions.create.return_value = mock_response
+
+        ai_service.client = mock_client
+
+        summary = ai_service.generate_summary(sample_metadata, sample_transcript, language="ru")
+
+        assert summary == "Русское резюме видео."
+        call_args = mock_client.chat.completions.create.call_args
+        messages = call_args.kwargs["messages"]
+        prompt = messages[0]["content"]
+
+        # Check that Russian instructions are in the prompt
+        assert "Пожалуйста, предоставьте подробное резюме на русском языке" in prompt
+        assert "Основная тема и цель видео" in prompt
+
+    @patch("src.ai.OpenAI")
+    def test_chat_about_video_russian_language(
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
+    ):
+        """Test chat in Russian language."""
+        mock_client = Mock()
+        mock_openai.return_value = mock_client
+
+        mock_response = Mock()
+        mock_choice = Mock()
+        mock_message = Mock()
+        mock_message.content = "Вот мой ответ о видео."
+        mock_choice.message = mock_message
+        mock_response.choices = [mock_choice]
+        mock_client.chat.completions.create.return_value = mock_response
+
+        ai_service.client = mock_client
+
+        response = ai_service.chat_about_video(
+            "О чём это видео?", sample_metadata, sample_transcript, [], language="ru"
+        )
+
+        assert response == "Вот мой ответ о видео."
+        call_args = mock_client.chat.completions.create.call_args
+        messages = call_args.kwargs["messages"]
+        system_message = messages[0]["content"]
+
+        # Check that Russian system message is used
+        assert "Вы полезный помощник, обсуждающий видео YouTube с пользователем" in system_message
+        assert "Отвечайте на русском языке" in system_message
+
+    @patch("src.ai.OpenAI")
+    def test_generate_summary_api_error(
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
+    ):
+        """Test error handling when OpenAI API fails."""
+        mock_client = Mock()
+        mock_openai.return_value = mock_client
+
+        # Simulate API error
+        mock_client.chat.completions.create.side_effect = Exception("API rate limit exceeded")
+        ai_service.client = mock_client
+
+        with pytest.raises(Exception, match="API rate limit exceeded"):
+            ai_service.generate_summary(sample_metadata, sample_transcript)
+
+    @patch("src.ai.OpenAI")
+    def test_chat_about_video_api_error(
+        self, mock_openai, ai_service, sample_metadata, sample_transcript
+    ):
+        """Test error handling when OpenAI API fails during chat."""
+        mock_client = Mock()
+        mock_openai.return_value = mock_client
+
+        # Simulate API error
+        mock_client.chat.completions.create.side_effect = Exception("API connection error")
+        ai_service.client = mock_client
+
+        with pytest.raises(Exception, match="API connection error"):
+            ai_service.chat_about_video(
+                "What is this about?", sample_metadata, sample_transcript, []
+            )

@@ -238,3 +238,91 @@ class TestHandleConversation:
         assert mock_update.message.reply_text.call_count == 1
         # Note: telegramify_markdown adds a newline at the end
         mock_typing_msg.edit_text.assert_called_once_with("AI response\n", parse_mode='MarkdownV2')
+
+    @pytest.mark.asyncio
+    async def test_conversation_transcript_not_found(self, bot, mock_update, mock_context):
+        """Test conversation when transcript is not found in any language."""
+        # Setup video metadata but no transcript
+        metadata = VideoMetadata(
+            video_id="test123",
+            title="Test Video",
+            description="Description",
+            channel_name="Channel",
+            duration=600,
+            published_at=datetime.utcnow(),
+            view_count=1000,
+            like_count=100,
+        )
+        bot.db.save_video_metadata(metadata)
+
+        # Save a message to establish video context
+        from src.models import ConversationMessage
+
+        msg = ConversationMessage(
+            user_id=12345,
+            video_id="test123",
+            role="user",
+            content="Previous message",
+            created_at=datetime.utcnow(),
+        )
+        bot.db.save_message(msg)
+
+        await bot.handle_conversation(
+            mock_update, 12345, "What is this about?", "ru"
+        )
+
+        # Should show error message
+        mock_update.message.reply_text.assert_called_once()
+        call_args = mock_update.message.reply_text.call_args[0][0]
+        assert "couldn't find the video data" in call_args
+
+    @pytest.mark.asyncio
+    async def test_conversation_ai_error(self, bot, mock_update, mock_context):
+        """Test error handling when AI fails during conversation."""
+        # Setup video data
+        metadata = VideoMetadata(
+            video_id="test123",
+            title="Test Video",
+            description="Description",
+            channel_name="Channel",
+            duration=600,
+            published_at=datetime.utcnow(),
+            view_count=1000,
+            like_count=100,
+        )
+        bot.db.save_video_metadata(metadata)
+
+        transcript = Transcript(
+            video_id="test123", language="en", text="Test transcript"
+        )
+        bot.db.save_transcript(transcript)
+
+        # Save a message to establish video context
+        from src.models import ConversationMessage
+
+        msg = ConversationMessage(
+            user_id=12345,
+            video_id="test123",
+            role="user",
+            content="Previous message",
+            created_at=datetime.utcnow(),
+        )
+        bot.db.save_message(msg)
+
+        mock_typing_msg = Mock()
+        mock_typing_msg.edit_text = AsyncMock()
+        mock_update.message.reply_text = AsyncMock(return_value=mock_typing_msg)
+
+        # Mock AI to raise error
+        with patch.object(bot.ai, "chat_about_video", side_effect=Exception("AI API error")):
+            await bot.handle_conversation(
+                mock_update, 12345, "What is this about?", "en"
+            )
+
+        # Should show error message
+        mock_update.message.reply_text.assert_called()
+        # The last call should be the error message
+        last_call = mock_update.message.reply_text.call_args_list[-1]
+        if last_call[0]:  # positional args
+            error_msg = last_call[0][0]
+            assert "Sorry, I encountered an error" in error_msg
