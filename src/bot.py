@@ -11,6 +11,7 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
+import telegramify_markdown
 
 from src.config import Config
 from src.database import Database
@@ -31,6 +32,16 @@ class YouTubeTranscriptBot:
         self.youtube = YouTubeService(config.youtube_api_key)
         self.ai = AIService(config.openai_api_key, config.max_summary_words)
 
+    @staticmethod
+    def _format_markdown(text: str) -> str:
+        """Convert standard Markdown to Telegram MarkdownV2."""
+        try:
+            return telegramify_markdown.markdownify(text)
+        except Exception as e:
+            logger.warning(f"Failed to convert markdown: {e}, sending as plain text")
+            # Fallback to plain text if conversion fails
+            return text
+
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handle /start command."""
         welcome_message = """👋 Welcome to YouTube Transcript Bot!
@@ -48,7 +59,9 @@ Commands:
 /start - Show this message
 /help - Show help information"""
 
-        await update.message.reply_text(welcome_message, parse_mode='Markdown')
+        await update.message.reply_text(
+            self._format_markdown(welcome_message), parse_mode='MarkdownV2'
+        )
 
     async def help_command(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -76,7 +89,9 @@ Examples:
    "Can you explain the part about X?"
    "What did they say about Y?"
 """
-        await update.message.reply_text(help_text, parse_mode='Markdown')
+        await update.message.reply_text(
+            self._format_markdown(help_text), parse_mode='MarkdownV2'
+        )
 
     async def handle_message(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -115,10 +130,12 @@ Examples:
             )
             self.db.save_message(context_msg)
 
-            await update.message.reply_text(
+            message_text = (
                 f"✅ I already have this video!\n\n{existing_summary.summary}\n\n"
-                f"💬 Ask me anything about this video!",
-                parse_mode='Markdown'
+                f"💬 Ask me anything about this video!"
+            )
+            await update.message.reply_text(
+                self._format_markdown(message_text), parse_mode='MarkdownV2'
             )
             return
 
@@ -158,13 +175,15 @@ Examples:
             self.db.save_message(context_msg)
 
             # Send summary
-            await status_msg.edit_text(
+            message_text = (
                 f"✅ Video processed successfully!\n\n"
                 f"📺 **{metadata.title}**\n"
                 f"👤 {metadata.channel_name}\n\n"
                 f"📄 Summary:\n{summary_text}\n\n"
-                f"💬 Ask me anything about this video!",
-                parse_mode='Markdown'
+                f"💬 Ask me anything about this video!"
+            )
+            await status_msg.edit_text(
+                self._format_markdown(message_text), parse_mode='MarkdownV2'
             )
 
         except Exception as e:
@@ -236,7 +255,9 @@ Examples:
             self.db.save_message(assistant_msg)
 
             # Send response
-            await typing_msg.edit_text(response, parse_mode='Markdown')
+            await typing_msg.edit_text(
+                self._format_markdown(response), parse_mode='MarkdownV2'
+            )
 
         except Exception as e:
             logger.error(f"Error in conversation: {e}")

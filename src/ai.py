@@ -61,9 +61,13 @@ Write in a clear, informative style.""",
 
         points = summary_points.get(language, summary_points["en"])
 
+        # Construct YouTube URL
+        video_url = f"https://www.youtube.com/watch?v={metadata.video_id}"
+
         prompt = f"""Analyze this YouTube video and create a concise summary.
 
 Video Details:
+- URL: {video_url}
 - Title: {metadata.title}
 - Channel: {metadata.channel_name}
 - Duration: {metadata.duration // 60} minutes {metadata.duration % 60} seconds
@@ -74,7 +78,12 @@ Transcript:
 {transcript.text[:15000]}  # Limit transcript to avoid token limits
 
 {instruction}
-{points}"""
+{points}
+
+IMPORTANT: At the very beginning of your response, include a clickable link to the video in this exact format:
+🎬 [Watch on YouTube]({video_url})
+
+Then provide the summary."""
 
         try:
             response = self.client.chat.completions.create(

@@ -236,4 +236,5 @@ class TestHandleConversation:
 
         # Should show typing indicator and then response
         assert mock_update.message.reply_text.call_count == 1
-        mock_typing_msg.edit_text.assert_called_once_with("AI response", parse_mode='Markdown')
+        # Note: telegramify_markdown adds a newline at the end
+        mock_typing_msg.edit_text.assert_called_once_with("AI response\n", parse_mode='MarkdownV2')
