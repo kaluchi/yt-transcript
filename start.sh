@@ -11,13 +11,11 @@ echo ""
 # Check if .env exists
 if [ ! -f .env ]; then
     echo "⚠️  .env file not found!"
-    echo "Creating from .env.example..."
-    cp .env.example .env
     echo ""
-    echo "⚠️  Please edit .env file and add your API keys:"
-    echo "   - TELEGRAM_BOT_TOKEN"
-    echo "   - YOUTUBE_API_KEY"
-    echo "   - ANTHROPIC_API_KEY"
+    echo "Please create .env file with the following variables:"
+    echo "   - TELEGRAM_BOT_TOKEN=your_token"
+    echo "   - YOUTUBE_API_KEY=your_key"
+    echo "   - OPENAI_API_KEY=your_key"
     echo ""
     echo "Then run this script again."
     exit 1

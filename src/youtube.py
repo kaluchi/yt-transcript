@@ -104,11 +104,7 @@ class YouTubeService:
     @staticmethod
     def _parse_duration(duration_str: str) -> int:
         """Parse ISO 8601 duration to seconds."""
-        import re
-
-        match = re.match(
-            r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", duration_str
-        )
+        match = re.match(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", duration_str)
         if not match:
             return 0
 
@@ -145,10 +141,11 @@ class YouTubeService:
             # Extract text from transcript snippets (FetchedTranscriptSnippet objects)
             text = " ".join([entry.text for entry in transcript_data])
 
-            # Get language from transcript metadata
-            language = transcript_data.language_code if hasattr(transcript_data, 'language_code') else preferred_languages[0]
-
-            return Transcript(video_id=video_id, language=language, text=text)
+            return Transcript(
+                video_id=video_id,
+                language=transcript_data.language_code,
+                text=text
+            )
 
         except TranscriptsDisabled:
             raise Exception("Transcripts are disabled for this video")

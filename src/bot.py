@@ -35,12 +35,7 @@ class YouTubeTranscriptBot:
     @staticmethod
     def _format_markdown(text: str) -> str:
         """Convert standard Markdown to Telegram MarkdownV2."""
-        try:
-            return telegramify_markdown.markdownify(text)
-        except Exception as e:
-            logger.warning(f"Failed to convert markdown: {e}, sending as plain text")
-            # Fallback to plain text if conversion fails
-            return text
+        return telegramify_markdown.markdownify(text)
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handle /start command."""
