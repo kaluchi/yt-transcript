@@ -1,7 +1,7 @@
 """Telegram bot for YouTube transcript processing."""
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from telegram import Update
 from telegram.ext import (
@@ -111,7 +111,7 @@ Examples:
                 video_id=video_id,
                 role="user",
                 content=f"[Viewing video: {metadata.title if metadata else video_id}]",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             self.db.save_message(context_msg)
 
@@ -145,7 +145,7 @@ Examples:
 
             # Save summary
             summary = VideoSummary(
-                video_id=video_id, summary=summary_text, created_at=datetime.utcnow()
+                video_id=video_id, summary=summary_text, created_at=datetime.now(timezone.utc)
             )
             self.db.save_summary(summary)
 
@@ -155,7 +155,7 @@ Examples:
                 video_id=video_id,
                 role="user",
                 content=f"[Processed new video: {metadata.title}]",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             self.db.save_message(context_msg)
 
@@ -215,7 +215,7 @@ Examples:
             video_id=last_video_id,
             role="user",
             content=message_text,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         self.db.save_message(user_msg)
 
@@ -232,7 +232,7 @@ Examples:
                 video_id=last_video_id,
                 role="assistant",
                 content=response,
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             self.db.save_message(assistant_msg)
 

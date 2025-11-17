@@ -1,7 +1,7 @@
 """Database layer for the YouTube Transcript Bot."""
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 

@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import Mock, patch
-from datetime import datetime
+from datetime import datetime, timezone
 from src.ai import AIService
 from src.models import VideoMetadata, Transcript, ConversationMessage
 
@@ -144,14 +144,14 @@ class TestChatAboutVideo:
                 video_id="test123",
                 role="user",
                 content="Previous question",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             ),
             ConversationMessage(
                 user_id=123,
                 video_id="test123",
                 role="assistant",
                 content="Previous answer",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             ),
         ]
 
@@ -192,7 +192,7 @@ class TestChatAboutVideo:
                 video_id="test123",
                 role="user" if i % 2 == 0 else "assistant",
                 content=f"Message {i}",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             for i in range(20)
         ]

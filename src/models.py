@@ -1,7 +1,7 @@
 """Data models for the YouTube Transcript Bot."""
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 @dataclass

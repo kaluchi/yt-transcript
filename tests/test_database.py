@@ -1,7 +1,7 @@
 """Tests for database module."""
 
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from src.database import Database
 from src.models import VideoMetadata, Transcript, VideoSummary, ConversationMessage
 
@@ -127,7 +127,7 @@ class TestVideoSummary:
         summary = VideoSummary(
             video_id="test123",
             summary="This is a test summary.",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
 
         db.save_summary(summary)
@@ -153,7 +153,7 @@ class TestConversationMessages:
             video_id="test123",
             role="user",
             content="What is this video about?",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
 
         msg2 = ConversationMessage(
@@ -161,7 +161,7 @@ class TestConversationMessages:
             video_id="test123",
             role="assistant",
             content="This video is about...",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
 
         db.save_message(msg1)
@@ -181,7 +181,7 @@ class TestConversationMessages:
                 video_id="test123",
                 role="user" if i % 2 == 0 else "assistant",
                 content=f"Message {i}",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             db.save_message(msg)
 

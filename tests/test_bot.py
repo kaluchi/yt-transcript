@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import Mock, AsyncMock, patch
-from datetime import datetime
+from datetime import datetime, timezone
 
 from src.bot import YouTubeTranscriptBot
 from src.config import Config
@@ -106,7 +106,7 @@ class TestProcessVideo:
         summary = VideoSummary(
             video_id="test123",
             summary="Existing summary",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         bot.db.save_summary(summary)
 
@@ -134,7 +134,7 @@ class TestProcessVideo:
             description="Description",
             channel_name="Channel",
             duration=600,
-            published_at=datetime.utcnow(),
+            published_at=datetime.now(timezone.utc),
             view_count=1000,
             like_count=100,
         )
@@ -201,7 +201,7 @@ class TestHandleConversation:
             description="Description",
             channel_name="Channel",
             duration=600,
-            published_at=datetime.utcnow(),
+            published_at=datetime.now(timezone.utc),
             view_count=1000,
             like_count=100,
         )
@@ -220,7 +220,7 @@ class TestHandleConversation:
             video_id="test123",
             role="user",
             content="Previous message",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         bot.db.save_message(msg)
 
@@ -248,7 +248,7 @@ class TestHandleConversation:
             description="Description",
             channel_name="Channel",
             duration=600,
-            published_at=datetime.utcnow(),
+            published_at=datetime.now(timezone.utc),
             view_count=1000,
             like_count=100,
         )
@@ -262,7 +262,7 @@ class TestHandleConversation:
             video_id="test123",
             role="user",
             content="Previous message",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         bot.db.save_message(msg)
 
@@ -285,7 +285,7 @@ class TestHandleConversation:
             description="Description",
             channel_name="Channel",
             duration=600,
-            published_at=datetime.utcnow(),
+            published_at=datetime.now(timezone.utc),
             view_count=1000,
             like_count=100,
         )
@@ -304,7 +304,7 @@ class TestHandleConversation:
             video_id="test123",
             role="user",
             content="Previous message",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         bot.db.save_message(msg)
 

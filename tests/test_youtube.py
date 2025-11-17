@@ -1,7 +1,7 @@
 """Tests for YouTube service."""
 
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 from src.youtube import YouTubeService
 from src.models import VideoMetadata, Transcript
