@@ -27,29 +27,10 @@ class YouTubeService:
 
     @staticmethod
     def extract_video_id(url: str) -> Optional[str]:
-        """
-        Extract video ID from YouTube URL.
-
-        Supports formats:
-        - https://www.youtube.com/watch?v=VIDEO_ID
-        - https://youtu.be/VIDEO_ID
-        - https://m.youtube.com/watch?v=VIDEO_ID
-        """
-        patterns = [
-            r"(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})",
-            r"youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})",
-        ]
-
-        for pattern in patterns:
-            match = re.search(pattern, url)
-            if match:
-                return match.group(1)
-
-        # If it looks like a video ID directly
-        if re.match(r"^[a-zA-Z0-9_-]{11}$", url):
-            return url
-
-        return None
+        """Extract video ID from YouTube URL."""
+        pattern = r"(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})"
+        match = re.search(pattern, url)
+        return match.group(1) if match else None
 
     def get_video_metadata(self, video_id: str) -> VideoMetadata:
         """
@@ -131,11 +112,8 @@ class YouTubeService:
             Exception: If transcript not available
         """
         try:
-            # Fetch transcript using new API
             api = YouTubeTranscriptApi()
             transcript_data = api.fetch(video_id, languages=preferred_languages)
-
-            # Extract text from transcript snippets (FetchedTranscriptSnippet objects)
             text = " ".join([entry.text for entry in transcript_data])
 
             return Transcript(
@@ -144,12 +122,8 @@ class YouTubeService:
                 text=text
             )
 
-        except TranscriptsDisabled:
-            raise Exception("Transcripts are disabled for this video")
-        except VideoUnavailable:
-            raise Exception("Video is unavailable")
-        except NoTranscriptFound:
-            raise Exception(f"No transcript found in languages: {preferred_languages}")
+        except (TranscriptsDisabled, VideoUnavailable, NoTranscriptFound) as e:
+            raise Exception(str(e))
         except Exception as e:
             logger.error(f"Error fetching transcript: {e}")
             raise

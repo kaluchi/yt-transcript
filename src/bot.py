@@ -39,20 +39,13 @@ class YouTubeTranscriptBot:
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handle /start command."""
-        welcome_message = """👋 Welcome to YouTube Transcript Bot!
+        welcome_message = """Welcome to YouTube Transcript Bot!
 
-I can help you:
-• Get summaries of YouTube videos
-• Discuss video content with you
+Send me a YouTube link and I'll:
+- Create a summary
+- Answer questions about the video
 
-📌 How to use:
-1. Send me a YouTube link
-2. I'll fetch the video, transcript, and create a summary
-3. You can then ask me questions about the video
-
-Commands:
-/start - Show this message
-/help - Show help information"""
+/help - Show help"""
 
         await update.message.reply_text(
             self._format_markdown(welcome_message), parse_mode='MarkdownV2'
@@ -62,27 +55,24 @@ Commands:
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Handle /help command."""
-        help_text = """🔍 How to use this bot:
+        help_text = """🔍 How to use:
 
-1️⃣ Send a YouTube URL:
-   - I'll download the video metadata and transcript
-   - Generate a summary (max 500 words)
-   - Save everything for later discussion
+Send a YouTube URL:
+- I'll fetch metadata and transcript
+- Generate a summary (max 500 words)
+- Save for later discussion
 
-2️⃣ Ask questions:
-   - After sending a video, just type your question
-   - I'll answer based on the video content
-   - I remember our conversation context
+Ask questions:
+- I'll answer based on video content
+- Conversation context is remembered
 
-💡 Tips:
-   - If video was already processed, I'll show the saved summary
-   - I prefer transcripts in your language, fallback to English
-   - You can discuss any previously sent video
+Tips:
+- Already processed videos load instantly
+- Transcripts use your language or English
 
 Examples:
-   "What is the main idea?"
-   "Can you explain the part about X?"
-   "What did they say about Y?"
+"What is the main idea?"
+"Can you explain the part about X?"
 """
         await update.message.reply_text(
             self._format_markdown(help_text), parse_mode='MarkdownV2'
@@ -206,11 +196,8 @@ Examples:
 
         # Get video data
         metadata = self.db.get_video_metadata(last_video_id)
-        transcript = self.db.get_transcript(last_video_id, user_language)
-
-        if not transcript:
-            # Try English
-            transcript = self.db.get_transcript(last_video_id, "en")
+        transcript = self.db.get_transcript(last_video_id, user_language) or \
+                     self.db.get_transcript(last_video_id, "en")
 
         if not metadata or not transcript:
             await update.message.reply_text(
@@ -277,21 +264,14 @@ Examples:
 
 def main():
     """Main entry point."""
-    # Setup logging
-    logging.basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=logging.INFO,
-    )
-
-    # Enable DEBUG logging for Telegram to see JSON payloads
-    logging.getLogger("telegram").setLevel(logging.DEBUG)
-    logging.getLogger("telegram.ext").setLevel(logging.DEBUG)
-
-    # Load configuration
     config = Config.from_env()
     config.validate()
 
-    # Create and run bot
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        level=getattr(logging, config.log_level.upper()),
+    )
+
     bot = YouTubeTranscriptBot(config)
     bot.run()
 

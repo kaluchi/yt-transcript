@@ -36,11 +36,6 @@ class TestExtractVideoId:
         url = "https://www.youtube.com/embed/dQw4w9WgXcQ"
         assert youtube_service.extract_video_id(url) == "dQw4w9WgXcQ"
 
-    def test_extract_from_direct_id(self, youtube_service):
-        """Test extraction from direct video ID."""
-        video_id = "dQw4w9WgXcQ"
-        assert youtube_service.extract_video_id(video_id) == "dQw4w9WgXcQ"
-
     def test_extract_invalid_url(self, youtube_service):
         """Test extraction from invalid URL."""
         url = "https://example.com/video"
@@ -196,7 +191,7 @@ class TestGetTranscript:
         mock_api.return_value = mock_instance
         mock_instance.fetch.side_effect = TranscriptsDisabled("test_id")
 
-        with pytest.raises(Exception, match="Transcripts are disabled"):
+        with pytest.raises(Exception, match="Subtitles are disabled"):
             youtube_service.get_transcript("test_id", ["en"])
 
     @patch("src.youtube.YouTubeTranscriptApi")
@@ -208,7 +203,7 @@ class TestGetTranscript:
         mock_api.return_value = mock_instance
         mock_instance.fetch.side_effect = VideoUnavailable("test_id")
 
-        with pytest.raises(Exception, match="Video is unavailable"):
+        with pytest.raises(Exception, match="video is no longer available"):
             youtube_service.get_transcript("test_id", ["en"])
 
     @patch("src.youtube.YouTubeTranscriptApi")
@@ -222,5 +217,5 @@ class TestGetTranscript:
             "test_id", ["ru"], []
         )
 
-        with pytest.raises(Exception, match="No transcript found in languages"):
+        with pytest.raises(Exception, match="No transcripts were found"):
             youtube_service.get_transcript("test_id", ["ru"])

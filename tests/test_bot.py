@@ -54,7 +54,6 @@ class TestStartCommand:
         mock_update.message.reply_text.assert_called_once()
         call_args = mock_update.message.reply_text.call_args[0][0]
         assert "Welcome" in call_args
-        assert "/start" in call_args
         assert "/help" in call_args
 
 
