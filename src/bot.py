@@ -123,7 +123,8 @@ class YouTubeTranscriptBot:
     @staticmethod
     def _t(key: str, lang: str = "en", **kwargs) -> str:
         """Get translated text."""
-        lang = "ru" if lang == "ru" else "en"
+        if lang not in TRANSLATIONS:
+            lang = "en"
         text = TRANSLATIONS[lang][key]
         return text.format(**kwargs) if kwargs else text
 
