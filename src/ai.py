@@ -68,8 +68,8 @@ Transcript:
 {instruction}
 {points}
 
-IMPORTANT: At the very beginning of your response, include a clickable link to the video in this exact format:
-🎬 [Watch on YouTube]({video_url})
+IMPORTANT: At the very beginning of your response, include the video link in this exact format:
+🎬 {video_url}
 
 Then provide the summary."""
 

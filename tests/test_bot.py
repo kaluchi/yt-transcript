@@ -267,7 +267,7 @@ class TestHandleConversation:
         bot.db.save_message(msg)
 
         await bot.handle_conversation(
-            mock_update, 12345, "What is this about?", "ru"
+            mock_update, 12345, "What is this about?", "en"
         )
 
         # Should show error message
