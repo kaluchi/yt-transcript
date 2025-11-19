@@ -115,10 +115,7 @@ Examples:
             )
             self.db.save_message(context_msg)
 
-            message_text = (
-                f"✅ I already have this video!\n\n{existing_summary.summary}\n\n"
-                f"💬 Ask me anything about this video!"
-            )
+            message_text = f"✅ I already have this video!\n\n{existing_summary.summary}"
             await update.message.reply_text(
                 self._format_markdown(message_text), parse_mode='MarkdownV2'
             )
@@ -164,8 +161,7 @@ Examples:
                 f"✅ Video processed successfully!\n\n"
                 f"📺 **{metadata.title}**\n"
                 f"👤 {metadata.channel_name}\n\n"
-                f"📄 Summary:\n{summary_text}\n\n"
-                f"💬 Ask me anything about this video!"
+                f"📄 Summary:\n{summary_text}"
             )
             await status_msg.edit_text(
                 self._format_markdown(message_text), parse_mode='MarkdownV2'
