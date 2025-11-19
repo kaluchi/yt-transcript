@@ -51,12 +51,10 @@ Examples:
 "What is the main idea?"
 "Can you explain the part about X?"
 """,
-        "already_have": "",
         "processing": "⏳ Processing video...",
         "fetching_metadata": "📥 Fetching video metadata...",
         "fetching_transcript": "📝 Fetching video transcript...",
         "generating_summary": "🤖 Generating summary with AI...",
-        "success": "📺 **{title}**\n👤 {channel}\n\n📄 Summary:\n",
         "error_processing": "❌ Error processing video: {error}\n\nPlease check the URL and try again.",
         "send_link_first": "👋 Please send me a YouTube link first, then we can discuss the video!\n\nUse /help for more information.",
         "video_not_found": "❌ Sorry, I couldn't find the video data. Please send the video link again.",
@@ -90,12 +88,10 @@ Examples:
 "В чём основная идея?"
 "Можешь объяснить часть про X?"
 """,
-        "already_have": "",
         "processing": "⏳ Обрабатываю видео...",
         "fetching_metadata": "📥 Получаю метаданные видео...",
         "fetching_transcript": "📝 Получаю транскрипт видео...",
         "generating_summary": "🤖 Создаю краткое содержание...",
-        "success": "📺 **{title}**\n👤 {channel}\n\n📄 Краткое содержание:\n",
         "error_processing": "❌ Ошибка при обработке видео: {error}\n\nПроверьте ссылку и попробуйте снова.",
         "send_link_first": "👋 Сначала отправьте мне ссылку на YouTube, а потом мы сможем обсудить видео!\n\nИспользуйте /help для справки.",
         "video_not_found": "❌ Извините, не могу найти данные видео. Отправьте ссылку заново.",
@@ -185,9 +181,8 @@ class YouTubeTranscriptBot:
             )
             self.db.save_message(context_msg)
 
-            message_text = self._t("already_have", user_language) + existing_summary.summary
             await update.message.reply_text(
-                self._format_markdown(message_text), parse_mode='MarkdownV2'
+                self._format_markdown(existing_summary.summary), parse_mode='MarkdownV2'
             )
             return
 
@@ -227,13 +222,8 @@ class YouTubeTranscriptBot:
             self.db.save_message(context_msg)
 
             # Send summary
-            message_text = self._t(
-                "success", user_language,
-                title=metadata.title,
-                channel=metadata.channel_name
-            ) + summary_text
             await status_msg.edit_text(
-                self._format_markdown(message_text), parse_mode='MarkdownV2'
+                self._format_markdown(summary_text), parse_mode='MarkdownV2'
             )
 
         except Exception as e:
