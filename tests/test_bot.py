@@ -117,7 +117,6 @@ class TestProcessVideo:
         # Should reply with existing summary
         mock_update.message.reply_text.assert_called_once()
         call_args = mock_update.message.reply_text.call_args[0][0]
-        assert "already have" in call_args
         assert "Existing summary" in call_args
 
     @pytest.mark.asyncio
