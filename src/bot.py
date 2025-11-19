@@ -51,12 +51,12 @@ Examples:
 "What is the main idea?"
 "Can you explain the part about X?"
 """,
-        "already_have": "✅ I already have this video!\n\n",
+        "already_have": "",
         "processing": "⏳ Processing video...",
         "fetching_metadata": "📥 Fetching video metadata...",
         "fetching_transcript": "📝 Fetching video transcript...",
         "generating_summary": "🤖 Generating summary with AI...",
-        "success": "✅ Video processed successfully!\n\n📺 **{title}**\n👤 {channel}\n\n📄 Summary:\n",
+        "success": "📺 **{title}**\n👤 {channel}\n\n📄 Summary:\n",
         "error_processing": "❌ Error processing video: {error}\n\nPlease check the URL and try again.",
         "send_link_first": "👋 Please send me a YouTube link first, then we can discuss the video!\n\nUse /help for more information.",
         "video_not_found": "❌ Sorry, I couldn't find the video data. Please send the video link again.",
@@ -90,12 +90,12 @@ Examples:
 "В чём основная идея?"
 "Можешь объяснить часть про X?"
 """,
-        "already_have": "✅ У меня уже есть это видео!\n\n",
+        "already_have": "",
         "processing": "⏳ Обрабатываю видео...",
         "fetching_metadata": "📥 Получаю метаданные видео...",
         "fetching_transcript": "📝 Получаю транскрипт видео...",
         "generating_summary": "🤖 Создаю краткое содержание...",
-        "success": "✅ Видео успешно обработано!\n\n📺 **{title}**\n👤 {channel}\n\n📄 Краткое содержание:\n",
+        "success": "📺 **{title}**\n👤 {channel}\n\n📄 Краткое содержание:\n",
         "error_processing": "❌ Ошибка при обработке видео: {error}\n\nПроверьте ссылку и попробуйте снова.",
         "send_link_first": "👋 Сначала отправьте мне ссылку на YouTube, а потом мы сможем обсудить видео!\n\nИспользуйте /help для справки.",
         "video_not_found": "❌ Извините, не могу найти данные видео. Отправьте ссылку заново.",
