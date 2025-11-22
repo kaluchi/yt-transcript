@@ -42,3 +42,7 @@ coverage.xml
 # Project specific
 bot.log
 profile.stats
+
+# Experimental/demo files
+test_isolation.py
+agent_subprocess.py
