@@ -74,8 +74,8 @@ class YouTubeService:
                 channel_name=snippet["channelTitle"],
                 duration=duration,
                 published_at=published_at,
-                view_count=int(statistics["viewCount"]),
-                like_count=int(statistics["likeCount"]),
+                view_count=int(statistics.get("viewCount", 0)),
+                like_count=int(statistics.get("likeCount", 0)),
             )
 
         except Exception as e:
