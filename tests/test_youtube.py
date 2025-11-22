@@ -113,6 +113,41 @@ class TestGetVideoMetadata:
         assert metadata.like_count == 100
 
     @patch("src.youtube.build")
+    def test_get_video_metadata_hidden_likes(self, mock_build, youtube_service):
+        """Test metadata fetching for video with hidden like count."""
+        mock_youtube = Mock()
+        mock_build.return_value = mock_youtube
+
+        mock_response = {
+            "items": [
+                {
+                    "id": "test_video_id",
+                    "snippet": {
+                        "title": "Test Video",
+                        "description": "Test description",
+                        "channelTitle": "Test Channel",
+                        "publishedAt": "2024-01-01T00:00:00Z",
+                    },
+                    "contentDetails": {"duration": "PT10M30S"},
+                    "statistics": {
+                        "viewCount": "1000",
+                        # likeCount is missing (hidden likes)
+                    },
+                }
+            ]
+        }
+
+        mock_youtube.videos().list().execute.return_value = mock_response
+        youtube_service.youtube = mock_youtube
+
+        metadata = youtube_service.get_video_metadata("test_video_id")
+
+        assert metadata.video_id == "test_video_id"
+        assert metadata.title == "Test Video"
+        assert metadata.view_count == 1000
+        assert metadata.like_count == 0  # Should default to 0 when missing
+
+    @patch("src.youtube.build")
     def test_get_video_metadata_not_found(self, mock_build, youtube_service):
         """Test metadata fetching for non-existent video."""
         mock_youtube = Mock()
